@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const products = [
@@ -6,40 +6,69 @@ const products = [
     id: 1,
     title: 'Galactic Oversize Tee',
     price: '₹1,999',
-    image: 'https://images.unsplash.com/photo-1547999962-65403ca852f9?ixid=M3w3OTkxMTl8MHwxfHNlYXJjaHwxfHxHYWxhY3RpYyUyME92ZXJzaXplJTIwVGVlfGVufDB8MHx8fDE3NjIwODQ5MTh8MA&ixlib=rb-4.1.0&w=1600&auto=format&fit=crop&q=80',
+    image:
+      'https://images.unsplash.com/photo-1547999962-65403ca852f9?ixid=M3w3OTkxMTl8MHwxfHNlYXJjaHwxfHxHYWxhY3RpYyUyME92ZXJzaXplJTIwVGVlfGVufDB8MHx8fDE3NjIwODQ5MTh8MA&ixlib=rb-4.1.0&w=1600&auto=format&fit=crop&q=80',
     colors: ['#FFFFFF', '#A020F0', '#00FFFF'],
   },
   {
     id: 2,
     title: 'Neon Tokyo Tee',
     price: '₹1,899',
-    image: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=1200&auto=format&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=1200&auto=format&fit=crop',
     colors: ['#000000', '#A020F0', '#00FFFF'],
   },
   {
     id: 3,
     title: 'Desi Hip-Hop Club Tee',
     price: '₹2,199',
-    image: 'https://images.unsplash.com/photo-1516826957135-700dedea698c?q=80&w=1200&auto=format&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1516826957135-700dedea698c?q=80&w=1200&auto=format&fit=crop',
     colors: ['#FFFFFF', '#000000'],
   },
   {
     id: 4,
     title: 'Anime Arc Tee',
     price: '₹1,799',
-    image: 'https://images.unsplash.com/photo-1755756383664-af3cf523242b?ixid=M3w3OTkxMTl8MHwxfHNlYXJjaHwxfHxBbmltZSUyMEFyYyUyMFRlZXxlbnwwfDB8fHwxNzYyMDg0OTE4fDA&ixlib=rb-4.1.0&w=1600&auto=format&fit=crop&q=80',
+    image:
+      'https://images.unsplash.com/photo-1755756383664-af3cf523242b?ixid=M3w3OTkxMTl8MHwxfHNlYXJjaHwxfHxBbmltZSUyMEFyYyUyMFRlZXxlbnwwfDB8fHwxNzYyMDg0OTE4fDA&ixlib=rb-4.1.0&w=1600&auto=format&fit=crop&q=80',
     colors: ['#FFFFFF', '#A020F0'],
   },
 ];
 
 const ProductCard = ({ product }) => {
+  const cardRef = useRef(null);
+
+  const handleMove = (e) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const midX = rect.width / 2;
+    const midY = rect.height / 2;
+    const rotateY = ((x - midX) / midX) * 8; // tilt left/right
+    const rotateX = -((y - midY) / midY) * 8; // tilt up/down
+    el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  };
+
+  const resetMove = () => {
+    const el = cardRef.current;
+    if (el) el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+  };
+
   return (
     <motion.a
       href="#"
       whileHover={{ y: -6 }}
-      className="group relative overflow-hidden rounded-2xl bg-white/5 p-3 ring-1 ring-white/10 hover:ring-[#00FFFF]/60 transition"
+      className="group relative overflow-hidden rounded-2xl bg-white/5 p-3 ring-1 ring-white/10 hover:ring-[#00FFFF]/60 transition will-change-transform"
     >
-      <div className="relative aspect-[4/5] overflow-hidden rounded-xl">
+      <div
+        ref={cardRef}
+        onMouseMove={handleMove}
+        onMouseLeave={resetMove}
+        className="relative aspect-[4/5] overflow-hidden rounded-xl transition-transform duration-150"
+      >
         <img
           src={product.image}
           alt={product.title}
@@ -47,6 +76,7 @@ const ProductCard = ({ product }) => {
           loading="lazy"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10 group-hover:ring-[#00FFFF]/40 transition" />
       </div>
       <div className="mt-3 flex items-start justify-between">
         <div>
@@ -55,11 +85,7 @@ const ProductCard = ({ product }) => {
         </div>
         <div className="flex items-center gap-1.5">
           {product.colors.map((c) => (
-            <span
-              key={c}
-              className="h-4 w-4 rounded-full ring-2 ring-white/20"
-              style={{ backgroundColor: c }}
-            />
+            <span key={c} className="h-4 w-4 rounded-full ring-2 ring-white/20" style={{ backgroundColor: c }} />
           ))}
         </div>
       </div>
@@ -77,10 +103,15 @@ const CollectionGrid = () => {
             <h2 className="text-3xl sm:text-4xl font-extrabold">Fresh Drops</h2>
             <p className="text-white/70 mt-2">Oversized cuts. Premium cotton. Limited runs.</p>
           </div>
-          <a href="#" className="hidden sm:inline-block rounded-full border border-white/20 px-5 py-2.5 text-sm hover:border-[#A020F0] hover:text-[#A020F0] transition">View All</a>
+          <a
+            href="#"
+            className="hidden sm:inline-block rounded-full border border-white/20 px-5 py-2.5 text-sm transition hover:border-[#A020F0] hover:text-[#A020F0]"
+          >
+            View All
+          </a>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
