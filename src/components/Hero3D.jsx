@@ -8,7 +8,7 @@ const Hero3D = () => {
     <section className="relative h-[90vh] w-full overflow-hidden">
       <div className="absolute inset-0">
         <Spline 
-          scene="https://prod.spline.design/7m4PRZ7kg6K1jPfF/scene.splinecode" 
+          scene="https://prod.spline.design/EF7JOSsHLk16Tlw9/scene.splinecode" 
           style={{ width: '100%', height: '100%' }}
         />
       </div>
